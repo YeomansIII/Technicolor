@@ -48,6 +48,11 @@ namespace WindowsGame1
         
         Vector2 dimensions;
 
+        bool transition;
+
+        FadeAnimation fade;
+        Texture2D fadeTexture;
+
         #endregion
 
         #region Properties
@@ -74,25 +79,60 @@ namespace WindowsGame1
 
         public void AddScreen(GameScreen screen)
         {
+            transition = true;
             newScreen = screen;
-            screenStack.Push(screen);
-            currentScreen.UnloadContent();
-            currentScreen = newScreen;
-            currentScreen.LoadContent(content);
+            fade.IsActive = true;
+            fade.Alpha = 1.0f;
+            fade.ActivateValue = 1.0f;
         }
 
         public void Initialize() {
-            currentScreen = new SplashScreen();
+            currentScreen = new TitleScreen();
+            fade = new FadeAnimation();
         }
         public void LoadContent(ContentManager Content) {
             content = new ContentManager(Content.ServiceProvider, "Content");
             currentScreen.LoadContent(Content);
+            fadeTexture = Content.Load<Texture2D>("fade");
+            fade.LoadContent(content, fadeTexture, "", Vector2.Zero);
+            fade.Scale = dimensions.X;
         }
         public void Update(GameTime gameTime) {
-            currentScreen.Update(gameTime);
+            if (!transition)
+                currentScreen.Update(gameTime);
+            else
+            {
+                Console.WriteLine("Tranitioning..");
+                Transition(gameTime);
+            }
         }
         public void Draw(SpriteBatch spriteBatch) {
             currentScreen.Draw(spriteBatch);
+            if (transition)
+                fade.Draw(spriteBatch);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void Transition(GameTime gameTime)
+        {
+            fade.Update(gameTime);
+            if (fade.Alpha == 1.0f && fade.Timer.TotalSeconds == 1.0f)
+            {
+                Console.WriteLine("Transition to: " + newScreen);
+                screenStack.Push(newScreen);
+                currentScreen.UnloadContent();
+                currentScreen = newScreen;
+                currentScreen.LoadContent(content);
+            }
+            else if (fade.Alpha == 0.0f) {
+                Console.WriteLine("Not transitioning");
+                transition = false;
+                fade.IsActive = false;
+            }
+
         }
 
         #endregion

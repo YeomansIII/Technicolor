@@ -70,7 +70,7 @@ namespace WindowsGame1
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            WhiteTexture = Content.Load<Texture2D>("pixel");
+            //WhiteTexture = Content.Load<Texture2D>("pixel");
             TestMap = Content.Load<Texture2D>("TestMap");
             Dude = Content.Load<Texture2D>("dude");
             CrouchDude = Content.Load<Texture2D>("cdude");

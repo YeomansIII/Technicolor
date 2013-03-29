@@ -16,29 +16,67 @@ namespace WindowsGame1
         protected SpriteFont font;
         protected Color color;
         protected Rectangle sourceRect;
-        float rotation, scale, axis;
-        Vector2 origin, position;
+        protected float rotation, scale, axis;
+        protected Vector2 origin, position;
+        protected ContentManager content;
+        protected bool isActive;
+        protected float alpha;
 
-        public void LoadContent(ContentManager Content, Texture2D image, string text, Vector2 position)
+        public virtual float Alpha
         {
+            get { return alpha; }
+            set { alpha = value; }
+        }
+
+        public bool IsActive
+        {
+            set { isActive = value; }
+            get { return isActive; }
+        }
+
+        public float Scale
+        {
+            set { scale = value; }
+        }
+
+        public virtual void LoadContent(ContentManager Content, Texture2D image, string text, Vector2 position)
+        {
+            content = new ContentManager(Content.ServiceProvider, "Content");
             this.image = image;
             this.text = text;
             this.position = position;
             if (text != String.Empty)
             {
-                font = Content.Load<SpriteFont>("AnimationFont");
+                font = content.Load<SpriteFont>("AnimationFont");
                 color = new Color(114, 77, 255);
             }
             if (image != null)
                 sourceRect = new Rectangle(0, 0, image.Width, image.Height);
             rotation = 0.0f;
             axis = 0.0f;
-            scale = 1.0f;
+            scale = alpha = 1.0f;
+            isActive = false;
         }
 
-        public void UnloadContent()
+        public virtual void UnloadContent()
         {
-            image = position = font = color = sourceRect = null;
+            content.Unload();
+            text = String.Empty;
+            sourceRect = Rectangle.Empty;
+            image = null;
+        }
+        public virtual void Update(GameTime gameTime)
+        { }
+        public virtual void Draw(SpriteBatch spriteBatch) { 
+        if(image != null) {
+            origin = new Vector2(sourceRect.Width / 2, sourceRect.Height / 2);
+            spriteBatch.Draw(image, position + origin, sourceRect, Color.White * alpha, rotation, origin, scale, SpriteEffects.None, 0.0f);
+        }
+        if (text != String.Empty)
+        {
+            origin = new Vector2(font.MeasureString(text).X / 2, font.MeasureString(text).Y / 2);
+            spriteBatch.DrawString(font, text, position + origin, color * alpha, rotation, origin, scale, SpriteEffects.None, 0.0f);
+        }
         }
     }
 }
