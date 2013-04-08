@@ -6,35 +6,44 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+ 
 
 namespace WindowsGame1
 {
-    public class GameScreen
+    public class Entity
     {
-        protected ContentManager content;
-        protected List<List<string>> attributes, contents;
-        protected InputManager inputManager;
+        protected int health;
+        protected SpriteSheetAnimation moveAnimation;
+        protected float moveSpeed;
 
-        public virtual void LoadContent(ContentManager Content, InputManager inputManager)
+        protected ContentManager content;
+        protected FileManager fileManager;
+
+        protected Texture2D image;
+        protected Vector2 position;
+
+        protected List<List<string>> attributes, contents;
+
+        public virtual void LoadContent(ContentManager content, InputManager input)
         {
-            content = new ContentManager(Content.ServiceProvider, "Content");
+            this.content = new ContentManager(content.ServiceProvider, "Content");
             attributes = new List<List<string>>();
             contents = new List<List<string>>();
-            this.inputManager = inputManager;
         }
 
         public virtual void UnloadContent()
         {
             content.Unload();
-            inputManager = null;
-            attributes.Clear();
-            contents.Clear();
         }
 
-        public virtual void Update(GameTime gameTime) { }
+        public virtual void Update(GameTime gameTime, InputManager input, Collision col, Layers layer)
+        {
+
+        }
+
         public virtual void Draw(SpriteBatch spriteBatch)
         {
+
         }
     }
 }

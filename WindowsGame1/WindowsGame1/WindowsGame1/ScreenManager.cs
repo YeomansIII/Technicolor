@@ -12,46 +12,40 @@ namespace WindowsGame1
 {
     public class ScreenManager
     {
-
         #region Variables
 
+        GameScreen currentScreen;
+        GameScreen newScreen;
+
         /// <summary>
-        /// Creating custom contentManager
+        /// Creating custom Content Manager
         /// </summary>
         ContentManager content;
 
         /// <summary>
-        ///The current screen that is beign displayed
+        /// Screen Manager Instance
         /// </summary>
-        GameScreen currentScreen;
-
-        /// <summary>
-        /// The new screen that wil lbe taking effect
-        /// </summary>
-        GameScreen newScreen;
-
-        /// <summary>
-        /// ScreenManager Instance
-        /// </summary>
-
         private static ScreenManager instance;
 
         /// <summary>
         /// Screen Stack
         /// </summary>
-      
+        /// 
         Stack<GameScreen> screenStack = new Stack<GameScreen>();
 
         /// <summary>
-        /// Screens width and height
+        /// Screen's width and height
         /// </summary>
-        
+        /// 
         Vector2 dimensions;
 
         bool transition;
 
-        FadeAnimation fade;
-        Texture2D fadeTexture;
+        FadeAnimation fade = new FadeAnimation();
+
+        Texture2D fadeTexture, nullImage;
+
+        InputManager inputManager;
 
         #endregion
 
@@ -67,46 +61,77 @@ namespace WindowsGame1
             }
         }
 
+        public ContentManager Content
+        {
+            get { return content; }
+        }
+
+
         public Vector2 Dimensions
         {
             get { return dimensions; }
             set { dimensions = value; }
         }
 
+        public Texture2D NullImage
+        {
+            get { return nullImage; }
+        }
         #endregion
 
         #region Main Methods
 
-        public void AddScreen(GameScreen screen)
+        public void AddScreen(GameScreen screen, InputManager inputManager)
         {
             transition = true;
             newScreen = screen;
             fade.IsActive = true;
-            fade.Alpha = 1.0f;
+            fade.Alpha = 0.0f;
             fade.ActivateValue = 1.0f;
+            this.inputManager = inputManager;
         }
 
-        public void Initialize() {
-            currentScreen = new TitleScreen();
-            fade = new FadeAnimation();
+        public void AddScreen(GameScreen screen, InputManager inputManager, float alpha)
+        {
+            transition = true;
+            newScreen = screen;
+            fade.IsActive = true;
+            fade.ActivateValue = 1.0f;
+            if (alpha != 1.0f)
+                fade.Alpha = 1.0f - alpha;
+            else
+                fade.Alpha = alpha;
+
+            fade.Increase = true;
+            this.inputManager = inputManager;
         }
-        public void LoadContent(ContentManager Content) {
+
+        public void Initialize()
+        {
+            currentScreen = new GamePlayScreen();
+            fade = new FadeAnimation();
+            inputManager = new InputManager();
+        }
+
+        public void LoadContent(ContentManager Content)
+        {
             content = new ContentManager(Content.ServiceProvider, "Content");
-            currentScreen.LoadContent(Content);
-            fadeTexture = Content.Load<Texture2D>("fade");
+            currentScreen.LoadContent(content, inputManager);
+
+            nullImage = this.content.Load<Texture2D>("null");
+            fadeTexture = this.content.Load<Texture2D>("fade");
             fade.LoadContent(content, fadeTexture, "", Vector2.Zero);
             fade.Scale = dimensions.X;
         }
-        public void Update(GameTime gameTime) {
+        public void Update(GameTime gameTime)
+        {
             if (!transition)
                 currentScreen.Update(gameTime);
             else
-            {
-                Console.WriteLine("Tranitioning..");
                 Transition(gameTime);
-            }
         }
-        public void Draw(SpriteBatch spriteBatch) {
+        public void Draw(SpriteBatch spriteBatch)
+        {
             currentScreen.Draw(spriteBatch);
             if (transition)
                 fade.Draw(spriteBatch);
@@ -121,21 +146,18 @@ namespace WindowsGame1
             fade.Update(gameTime);
             if (fade.Alpha == 1.0f && fade.Timer.TotalSeconds == 1.0f)
             {
-                Console.WriteLine("Transition to: " + newScreen);
                 screenStack.Push(newScreen);
                 currentScreen.UnloadContent();
                 currentScreen = newScreen;
-                currentScreen.LoadContent(content);
+                currentScreen.LoadContent(content, inputManager);
             }
-            else if (fade.Alpha == 0.0f) {
-                Console.WriteLine("Not transitioning");
+            else if (fade.Alpha == 0.0f)
+            {
                 transition = false;
                 fade.IsActive = false;
             }
-
         }
 
         #endregion
-
     }
 }

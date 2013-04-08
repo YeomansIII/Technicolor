@@ -14,31 +14,20 @@ namespace WindowsGame1
     /// <summary>
     /// This is the main type for your game
     /// </summary>
+  /// <summary>
+    /// This is the main type for your game
+    /// </summary>
     public class Game1 : Microsoft.Xna.Framework.Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        Texture2D Dude,CrouchDude,TestMap, WhiteTexture;
-        Vector2 MySpritePosition = Vector2.Zero;
-        bool W = false, A = false, S = false, D = false;
-        string dir = "right";
-        int gravity = 5, surface = 369, jump = 80;
-        bool canJump = true, jumping = false;
-        MouseState m;
-        Rectangle dudeBox, basePlat,firstPlat,secPlat,thiPlat,fourPlat,fivePlat,sixPlat;
-        List<Rectangle> platList;
-        Color color = Color.White;
-
-        int frameRate = 0;
-        int frameCounter = 0;
-        TimeSpan elapsedTime = TimeSpan.Zero;
-
+ 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
-
+ 
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
         /// This is where it can query for any required services and load any non-graphic
@@ -47,20 +36,17 @@ namespace WindowsGame1
         /// </summary>
         protected override void Initialize()
         {
+            // TODO: Add your initialization logic here
             ScreenManager.Instance.Initialize();
-            ScreenManager.Instance.Dimensions = new Vector2(896, 480);
-
+ 
+            ScreenManager.Instance.Dimensions = new Vector2(640, 480);
             graphics.PreferredBackBufferWidth = (int)ScreenManager.Instance.Dimensions.X;
             graphics.PreferredBackBufferHeight = (int)ScreenManager.Instance.Dimensions.Y;
             graphics.ApplyChanges();
-
-
-            IsMouseVisible = true;
-            // TODO: Add your initialization logic here
-            MySpritePosition.Y = 385;
+ 
             base.Initialize();
         }
-
+ 
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
         /// all of your content.
@@ -69,57 +55,49 @@ namespace WindowsGame1
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            //WhiteTexture = Content.Load<Texture2D>("pixel");
-            TestMap = Content.Load<Texture2D>("TestMap");
-            Dude = Content.Load<Texture2D>("dude");
-            CrouchDude = Content.Load<Texture2D>("cdude");
-
-            ScreenManager.Instance.LoadContent(Content);
+ 
             // TODO: use this.Content to load your game content here
+            ScreenManager.Instance.LoadContent(Content);
         }
-
+ 
         /// <summary>
         /// UnloadContent will be called once per game and is the place to unload
         /// all content.
         /// </summary>
         protected override void UnloadContent()
         {
-            
             // TODO: Unload any non ContentManager content here
+             
         }
-
+ 
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
         /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        /// 
         protected override void Update(GameTime gameTime)
         {
-
+            // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
-
+ 
+            // TODO: Add your update logic here
             ScreenManager.Instance.Update(gameTime);
-
             base.Update(gameTime);
         }
-
+ 
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        /// 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            spriteBatch.Begin();
-
-            ScreenManager.Instance.Draw(spriteBatch);
-
-            spriteBatch.End();
+ 
             // TODO: Add your drawing code here
-
+            spriteBatch.Begin();
+            ScreenManager.Instance.Draw(spriteBatch);
+            spriteBatch.End();
             base.Draw(gameTime);
         }
     }

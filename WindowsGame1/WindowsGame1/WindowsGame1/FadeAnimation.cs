@@ -9,12 +9,13 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace WindowsGame1
 {
+
     public class FadeAnimation : Animation
     {
         bool increase;
         float fadeSpeed;
         TimeSpan defaultTime, timer;
-        bool startTimer;
+        //bool starTimer;
         float activateValue;
         bool stopUpdating;
         float defaultAlpha;
@@ -37,6 +38,7 @@ namespace WindowsGame1
             set
             {
                 alpha = value;
+
                 if (alpha == 1.0f)
                     increase = false;
                 else if (alpha == 0.0f)
@@ -50,12 +52,18 @@ namespace WindowsGame1
             set { activateValue = value; }
         }
 
+        public bool Increase
+        {
+            get { return increase; }
+            set { increase = value; }
+        }
+
         public override void LoadContent(ContentManager Content, Texture2D image, string text, Vector2 position)
         {
             base.LoadContent(Content, image, text, position);
             increase = false;
             fadeSpeed = 1.0f;
-            defaultTime = new TimeSpan(0,0,1);
+            defaultTime = new TimeSpan(0, 0, 1);
             timer = defaultTime;
             activateValue = 0.0f;
             stopUpdating = false;
@@ -72,18 +80,25 @@ namespace WindowsGame1
                         alpha -= fadeSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
                     else
                         alpha += fadeSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
                     if (alpha <= 0.0f)
+                    {
                         alpha = 0.0f;
+                        increase = !increase;
+                    }
                     else if (alpha >= 1.0f)
+                    {
                         alpha = 1.0f;
+                        increase = false;
+                    }
                 }
+
                 if (alpha == activateValue)
                 {
                     stopUpdating = true;
                     timer -= gameTime.ElapsedGameTime;
                     if (timer.TotalSeconds <= 0)
                     {
-                        increase = !increase;
                         timer = defaultTime;
                         stopUpdating = false;
                     }
@@ -92,8 +107,8 @@ namespace WindowsGame1
             else
             {
                 alpha = defaultAlpha;
+                stopUpdating = false;
             }
         }
-
     }
 }
